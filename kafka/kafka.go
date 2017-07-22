@@ -1,7 +1,6 @@
 package kafka
 
 import (
-	"strings"
 	"time"
 
 	"github.com/Shopify/sarama"
@@ -9,35 +8,32 @@ import (
 )
 
 const (
-	Addresses = "192.168.1.157:9092"
-	TimeOut   = 5
+	TimeOut = 5
 )
 
-// asyncProducer 异步生产者
-// 并发量大时，必须采用这种方式
-func NewKafkaTransport(encoder geda.IEncoding, config *sarama.Config) (*KafkaTransport, error) {
+func NewKafkaTransport(encoder geda.IEncoding, config *sarama.Config, addrs []string) (*KafkaTransport, error) {
 	if config == nil {
 		config = sarama.NewConfig()
 		config.Producer.Return.Successes = true //必须有这个选项
 		config.Producer.Timeout = TimeOut * time.Second
 	}
 	return &KafkaTransport{
-		Producer: newProducer(config),
-		Consumer: newCustomer(config),
+		Producer: newProducer(config, addrs),
+		Consumer: newCustomer(config, addrs),
 		Encoder:  encoder,
 	}, nil
 }
 
-func newCustomer(config *sarama.Config) sarama.Consumer {
-	c, err := sarama.NewConsumer(strings.Split(Addresses, ","), config)
+func newCustomer(config *sarama.Config, addrs []string) sarama.Consumer {
+	c, err := sarama.NewConsumer(addrs, config)
 	if err != nil {
 		panic(err)
 	}
 	return c
 }
 
-func newProducer(config *sarama.Config) sarama.AsyncProducer {
-	p, err := sarama.NewAsyncProducer(strings.Split(Addresses, ","), config)
+func newProducer(config *sarama.Config, addrs []string) sarama.AsyncProducer {
+	p, err := sarama.NewAsyncProducer(addrs, config)
 	if err != nil {
 		panic(err)
 	}

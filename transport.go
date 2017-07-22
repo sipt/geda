@@ -1,5 +1,7 @@
 package geda
 
+import "encoding/json"
+
 const (
 	//CommondCancel 取消事件
 	CommondCancel = "cancel"
@@ -37,4 +39,17 @@ type ITransport interface {
 type IEncoding interface {
 	Encode(interface{}) ([]byte, error)
 	Decode([]byte, interface{}) error
+}
+
+func NewJsonEncoder() IEncoding {
+	return new(jsonEncoder)
+}
+
+type jsonEncoder struct{}
+
+func (*jsonEncoder) Encode(v interface{}) ([]byte, error) {
+	return json.Marshal(v)
+}
+func (*jsonEncoder) Decode(bytes []byte, v interface{}) error {
+	return json.Unmarshal(bytes, v)
 }

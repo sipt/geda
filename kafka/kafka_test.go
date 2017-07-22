@@ -12,7 +12,7 @@ import (
 
 func TestProducer(t *testing.T) {
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	trans, err := NewKafkaTransport()
+	trans, err := NewKafkaTransport(geda.NewJsonEncoder(), nil, []string{"192.168.1.157:9092"})
 	if err != nil {
 		t.Error(err)
 	}
