@@ -90,9 +90,10 @@ func (k *KafkaTransport) Publish(e *geda.Element, bus geda.Bus) {
 	bytes, err := k.Encoder.Encode(e)
 	if err != nil {
 		e.Err = err
-	}
-	if bus != nil {
-		bus <- e
+		if bus != nil {
+			bus <- e
+		}
+		return
 	}
 	k.Producer.Input() <- &sarama.ProducerMessage{
 		Topic: e.Title,

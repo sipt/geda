@@ -38,14 +38,16 @@ func (e *Endpoint) Output() <-chan *Element {
 func (e *Endpoint) Cancel(elem *Element) {
 	elem.Commond = CommondCancel
 	elem.ID = e.ID
-	e.t.Publish(elem, e.bus)
+	// e.t.Publish(elem, e.bus)
+	e.t.Publish(elem, nil)
 }
 
 //Confirm 确认事件
 func (e *Endpoint) Confirm(elem *Element) {
 	elem.Commond = CommondConfirm
 	elem.ID = e.ID
-	e.t.Publish(elem, e.bus)
+	// e.t.Publish(elem, e.bus)
+	e.t.Publish(elem, nil)
 }
 
 //Subscribe 订阅事件
@@ -58,5 +60,6 @@ func (e *Endpoint) Subscribe(elem *Element) {
 func (e *Endpoint) Publish(elem *Element) {
 	elem.Commond = CommondPublish
 	elem.ID = e.ID
-	e.t.Publish(elem, e.bus)
+	// e.t.Publish(elem, e.bus)
+	e.t.Publish(elem, nil)
 }
