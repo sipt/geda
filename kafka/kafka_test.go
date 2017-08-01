@@ -12,23 +12,23 @@ import (
 
 func TestProducer(t *testing.T) {
 	runtime.GOMAXPROCS(runtime.NumCPU())
-	trans, err := NewKafkaTransport(geda.NewJsonEncoder(), nil, []string{"192.168.1.157:9092"})
+	bus := make(geda.Bus, 100)
+	trans, err := NewKafkaTransport(geda.NewJsonEncoder(), nil, []string{"192.168.1.157:9092"}, bus)
 	if err != nil {
 		t.Error(err)
 	}
 	pBus, cBus := make(geda.Bus), make(geda.Bus)
 	trans.Subscribe(&geda.Element{
-		Title: "test",
+		Topic: "test",
 	}, cBus)
 	count := 5
 	go func(trans *KafkaTransport) {
 		for index := 0; index < count; index++ {
 			trans.Publish(&geda.Element{
-				Title:   "test",
-				Type:    "confirm",
-				ID:      "123123123",
-				Commond: "Publish",
-				Data:    fmt.Sprint("value index :", index),
+				Topic: "test",
+				Type:  "confirm",
+				ID:    "123123123",
+				Data:  fmt.Sprint("value index :", index),
 			}, pBus)
 		}
 	}(trans)
@@ -45,6 +45,5 @@ func TestProducer(t *testing.T) {
 		}
 	}()
 	time.Sleep(5 * time.Second)
-	trans.Producer.Close()
-	trans.Consumer.Close()
+	trans.Crash()
 }
